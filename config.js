@@ -1,10 +1,8 @@
-// Completa API_URL después de desplegar Google Apps Script como "Aplicación web".
 window.WEDDING_CONFIG = {
-  API_URL: "",
+  // Después de desplegar apps-script/Code.gs como Aplicación web, pega aquí la URL /exec.
+  API_URL: "https://script.google.com/macros/s/AKfycbw0pGZaY0tQTW7lIv2pjQlY-M-PdEows91eaB_M44LQkRqEYxpmiL_Ur-3eAklfayY/exec",
   WEDDING_DATE: "2027-04-24T14:30:00-06:00",
 
-  // Para probar el diseño antes de conectar Sheets:
-  // abre index.html?id=demo
   DEMO_ID: "demo",
   DEMO_INVITATION: {
     family: "Carlos & Fernanda",

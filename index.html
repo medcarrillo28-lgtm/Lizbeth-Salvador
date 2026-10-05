@@ -3,6 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    // Evita que el navegador restaure una posición intermedia al abrir/recargar.
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+    window.scrollTo(0, 0);
+  </script>
   <meta name="theme-color" content="#6f765f">
   <meta name="description" content="Invitación de boda de Lizbeth y Salvador — 24 de abril de 2027, Zacatecas.">
   <title>Lizbeth & Salvador | 24·04·2027</title>
@@ -10,10 +15,43 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Great+Vibes&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="assets/img/intro-envelope-poster-static.webp" type="image/webp">
+  <link rel="preload" as="image" href="assets/img/intro-flap-left.webp" type="image/webp">
+  <link rel="preload" as="image" href="assets/img/intro-flap-right.webp" type="image/webp">
+  <link rel="preload" as="image" href="assets/img/intro-flap-top-clean.webp" type="image/webp">
+  <link rel="preload" as="image" href="assets/img/intro-flap-bottom.webp" type="image/webp">
+  <link rel="preload" as="image" href="assets/img/intro-seal-static.webp" type="image/webp">
+  <link rel="preload" as="audio" href="assets/audio/musica-boda.mp3" type="audio/mpeg">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-  <header class="hero" id="inicio">
+<body class="intro-active">
+  <div class="intro-envelope" id="introEnvelope" aria-hidden="true">
+    <div class="intro-envelope__stage">
+      <div class="intro-envelope__underlay">
+        <div class="intro-envelope__photo"></div>
+        <div class="intro-envelope__veil"></div>
+      </div>
+
+      <div class="intro-envelope__flap intro-envelope__bottom">
+        <img src="assets/img/intro-flap-bottom.webp" alt="" draggable="false">
+      </div>
+      <div class="intro-envelope__flap intro-envelope__top">
+        <img src="assets/img/intro-flap-top-clean.webp" alt="" draggable="false">
+      </div>
+      <div class="intro-envelope__flap intro-envelope__right">
+        <img src="assets/img/intro-flap-right.webp" alt="" draggable="false">
+      </div>
+      <div class="intro-envelope__left-group">
+        <div class="intro-envelope__flap intro-envelope__left">
+          <img src="assets/img/intro-flap-left.webp" alt="" draggable="false">
+        </div>
+        <img class="intro-envelope__seal" id="introSeal" src="assets/img/intro-seal-static.webp" alt="Abrir invitación" draggable="false" role="button" tabindex="0" aria-label="Abrir invitación">
+      </div>
+
+      <img class="intro-envelope__poster" src="assets/img/intro-envelope-poster-static.webp" alt="" draggable="false">
+    </div>
+  </div>
+<header class="hero" id="inicio">
     <div class="hero-overlay"></div>
     <div class="hero-content">
       <p class="eyebrow">NOS CASAMOS</p>
@@ -24,7 +62,7 @@
 
   <main>
     <section class="section welcome">
-      <div class="wrap narrow center">
+      <div class="wrap narrow center reveal reveal-left">
         <p class="kicker">Nuestra boda</p>
         <h2>Queremos compartir este día con ustedes</h2>
         <p class="lead"><strong>Nos sentimos muy felices de compartir este momento tan especial con ustedes.<br>
@@ -34,7 +72,7 @@
     </section>
 
     <section class="section countdown-section">
-      <div class="wrap center">
+      <div class="wrap center reveal reveal-right">
         <p class="kicker light">Faltan pocos días para nuestro gran día</p>
         <div class="countdown" id="countdown">
           <div><strong id="days">0</strong><span>Días</span></div>
@@ -47,10 +85,12 @@
 
     <section class="section" id="detalles">
       <div class="wrap">
-        <p class="kicker center">24 de abril de 2027</p>
-        <h2 class="center">Nuestro gran día</h2>
+        <div class="reveal reveal-left">
+          <p class="kicker center">24 de abril de 2027</p>
+          <h2 class="center">Nuestro gran día</h2>
+        </div>
         <div class="event-grid">
-          <article class="event-card">
+          <article class="event-card reveal reveal-left">
          <img class="iglesia" src="assets/img/iglesia.png" alt="L y S">
             <h3>Ceremonia religiosa</h3>
             <p class="time">2:30 p.m.</p>
@@ -58,7 +98,7 @@
             <a class="btn btn-outline" target="_blank" rel="noopener" href="https://maps.app.goo.gl/q3AWRPkG8o9D6GmR9">Ver ubicación</a>
           </article>
 
-          <article class="event-card">
+          <article class="event-card reveal reveal-right">
          <img class="iglesia" src="assets/img/tostado.png" alt="L y S">
             <h3>Recepción</h3>
             <p class="time">6:00 p.m.</p>
@@ -73,26 +113,28 @@
 
     <section class="section padrinos" id="padrinos">
       <div class="wrap">
-        <p class="kicker center">Con cariño</p>
-        <h2 class="center">Nuestros padrinos</h2>
+        <div class="reveal reveal-right">
+          <p class="kicker center">Con cariño</p>
+          <h2 class="center">Nuestros padrinos</h2>
+        </div>
         <div class="sponsors-grid">
-          <article>
+          <article class="reveal reveal-left">
             <h3>Padrinos de velación</h3>
              <img  src="assets/img/biblia.png" alt="L" class="anillo">
             <p>Mercedes Castro Salazar<br>Jovani López Saldaña</p>
           </article>
-          <article>
+          <article class="reveal reveal-right">
             <h3>Padrinos de anillos</h3>
         <img  src="assets/img/anillo-de-bodas.png" alt="L" class="anillo">
             <p>Verónica Sujey Jiménez Flores <br> Edgar Antonio Esparza Carrillo</p>
           </article>
-          <article>
+          <article class="reveal reveal-left">
             <h3>Padrinos de lazo</h3>
         <img  src="assets/img/rosario.png" alt="L" class="anillo">
 
             <p>Nitzia Ortega López<br>Luis Gabriel López Molina</p>
           </article>
-          <article>
+          <article class="reveal reveal-right">
             <h3>Padrino de arras</h3>
         <img  src="assets/img/pila-de-monedas.png" alt="L" class="anillo">
 
@@ -103,7 +145,7 @@
     </section>
 
     <section class="section dress">
-      <div class="wrap narrow center">
+      <div class="wrap narrow center reveal reveal-left">
         <p class="kicker">Código de vestimenta</p>
         <h2>Traje y vestido de fiesta</h2>
         <p>Para ellas, agradecemos reservar el blanco, marfil, perla y tonos similares para la novia.</p>
@@ -115,19 +157,21 @@
 
     <section class="section gallery" id="galeria">
       <div class="wrap">
-        <p class="kicker center">Nuestros recuerdos</p>
+        <div class="reveal reveal-right">
+          <p class="kicker center">Nuestros recuerdos</p>
+        </div>
         <div class="gallery-grid">
-          <figure class="g"><img src="assets/img/foto-03-save-the-date.jpeg" alt="Save the date Lizbeth y Salvador"></figure>
-          <figure class="g tall"><img src="assets/img/foto-06.jpeg" alt="Lizbeth y Salvador"></figure>
-          <figure class="g wide"><img src="assets/img/foto-01.jpeg" alt="Lizbeth y Salvador"></figure>
-          <figure class="g"><img src="assets/img/foto-02.jpeg" alt="Lizbeth y Salvador"></figure>
-          <figure class="g"><img src="assets/img/foto-05.jpeg" alt="Lizbeth y Salvador"></figure>
+          <figure class="g reveal reveal-left reveal-delay-1"><img style="border-radius: 5px;" src="assets/img/foto-03-save-the-date.jpeg" alt="Save the date Lizbeth y Salvador"></figure>
+          <figure class="g tall reveal reveal-right reveal-delay-2"><img style="border-radius: 5px;" src="assets/img/foto-04.jpeg" alt="Lizbeth y Salvador"></figure>
+          <figure class="g wide reveal reveal-left reveal-delay-1"><img style="border-radius: 5px;" src="assets/img/foto-01.jpeg" alt="Lizbeth y Salvador"></figure>
+          <figure class="g reveal reveal-right reveal-delay-2"><img style="border-radius: 5px;" src="assets/img/foto-02.jpeg" alt="Lizbeth y Salvador"></figure>
+          <figure class="g reveal reveal-left reveal-delay-1"><img style="border-radius: 5px;" src="assets/img/foto-05.jpeg" alt="Lizbeth y Salvador"></figure>
         </div>
       </div>
     </section>
 
     <section class="section gifts" id="regalos">
-      <div class="wrap narrow center">
+      <div class="wrap narrow center reveal reveal-right">
         <p class="kicker">Mesa de regalos</p>
         <h2>Su presencia es nuestro mejor regalo</h2>
         <p>Si desean tener un detalle con nosotros, pueden encontrar nuestra mesa de regalos en Liverpool.</p>
@@ -138,7 +182,7 @@
 
     <section class="section rsvp" id="rsvp">
       <div class="wrap rsvp-wrap" >
-        <div class="rsvp-copy" style="text-align: -webkit-center;">
+        <div class="rsvp-copy reveal reveal-left" style="text-align: -webkit-center;">
           <h2>Confirma tu asistencia</h2>
           <p>Agradecemos confirmar su asistencia antes del <strong>31 de Marzo de 2027</strong>.</p>
           <div id="guestCard" class="guest-card">
@@ -146,8 +190,11 @@
           </div>
         </div>
 
-        <form id="rsvpForm" class="rsvp-form" method="post" target="submitFrame">
+        <form id="rsvpForm" class="rsvp-form reveal reveal-right" method="post" target="submitFrame">
           <input type="hidden" name="id" id="inviteId">
+          <input type="hidden" name="status" id="legacyStatus">
+          <input type="hidden" name="attendees" id="legacyAttendees">
+          <input type="hidden" name="message" id="legacyMessage">
           <label>¿Podrán acompañarnos?</label>
           <div class="radio-row">
             <label><input type="radio" name="asiste" value="SI" required> Sí, confirmamos</label>
@@ -173,9 +220,15 @@
   </main>
 
   <footer>
+    <div class="reveal reveal-up">
     <img src="assets/img/logo-ls.jpeg" alt="L&S" class="footer-logo">
     <p class="item-footer">Lizbeth & Salvador · 24·04·2027</p>
+    </div>
   </footer>
+
+  <audio id="backgroundMusic" preload="auto" loop playsinline aria-hidden="true">
+    <source src="assets/audio/musica-boda.mp3" type="audio/mpeg">
+  </audio>
 
   <script src="config.js"></script>
   <script src="app.js"></script>
