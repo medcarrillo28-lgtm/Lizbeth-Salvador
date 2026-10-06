@@ -488,6 +488,7 @@ h3 {
   padding: 22px;
   margin-top: 28px;
   background: rgba(255, 255, 255, 0.06);
+  border-radius: 5px;
 }
 
 .guest-card strong {
