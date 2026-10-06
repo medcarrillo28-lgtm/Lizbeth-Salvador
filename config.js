@@ -1,5 +1,4 @@
 window.WEDDING_CONFIG = {
-  // Backend RSVP publicado en Google Apps Script.
   API_URL: "https://script.google.com/macros/s/AKfycbwrvA2abQhL5-RDRo2d0f2WIjM4Q-6TysmVu2zitnGulnI1kKG6xJYcfXOEV1Dq2fIL/exec",
   WEDDING_DATE: "2027-04-24T14:30:00-06:00",
 
@@ -129,7 +128,6 @@ window.WEDDING_CONFIG = {
     cleanup();
 
     if (data && data.ok !== false) {
-      // Guardamos los datos para poder reconstruir la respuesta guardada en el formulario.
       window.WEDDING_INVITATION_DATA = data;
       allowAccess();
     } else {
@@ -150,7 +148,7 @@ window.WEDDING_CONFIG = {
 })();
 
 // Si ya existe una respuesta, reconstruye el formulario con esa información,
-// pero lo deja completamente editable para que el invitado pueda actualizarla.
+// pero lo deja editable para que el invitado pueda actualizarla.
 (() => {
   function normalizeInvitation(data) {
     if (!data) return null;
@@ -180,7 +178,6 @@ window.WEDDING_CONFIG = {
     const guestCard = document.getElementById("guestCard");
     if (!data || !form || !guestCard) return false;
 
-    // Espera a que app.js termine de cargar la invitación para evitar que vuelva a limpiar el select.
     if (/Cargando invitación personalizada/i.test(guestCard.textContent || "")) return false;
 
     const yesRadio = form.querySelector('input[name="asiste"][value="SI"]');
@@ -201,7 +198,6 @@ window.WEDDING_CONFIG = {
       attendanceBlock.style.display = "block";
       attendeeSelect.required = true;
 
-      // Reconstruye las opciones por seguridad y conserva el valor guardado.
       attendeeSelect.innerHTML = '<option value="">Selecciona una opción</option>';
       for (let i = 1; i <= Math.max(1, data.places); i++) {
         const option = document.createElement("option");
@@ -209,6 +205,7 @@ window.WEDDING_CONFIG = {
         option.textContent = i === 1 ? "1 persona" : `${i} personas`;
         attendeeSelect.appendChild(option);
       }
+
       if (data.attendees >= 1 && data.attendees <= data.places) {
         attendeeSelect.value = String(data.attendees);
       }
@@ -253,7 +250,7 @@ window.WEDDING_CONFIG = {
 })();
 
 // Ajustes visuales del RSVP: el nombre de la familia sólo aparece en el formulario
-// y el mensaje de éxito recibe una animación elegante al guardar la respuesta.
+// y el mensaje de éxito entra, permanece unos segundos y después desaparece suavemente.
 (() => {
   const style = document.createElement("style");
   style.textContent = `
@@ -292,6 +289,14 @@ window.WEDDING_CONFIG = {
       animation: rsvpCheckIn .55s .12s cubic-bezier(.2,.9,.3,1.35) both;
     }
 
+    #formMessage.rsvp-success-animated.rsvp-success-leaving {
+      animation: rsvpSuccessOut .55s ease both;
+    }
+
+    #formMessage.rsvp-success-animated.rsvp-success-leaving::before {
+      animation: rsvpCheckOut .4s ease both;
+    }
+
     @keyframes rsvpSuccessIn {
       from { opacity: 0; transform: translateY(12px) scale(.985); }
       to { opacity: 1; transform: translateY(0) scale(1); }
@@ -302,9 +307,21 @@ window.WEDDING_CONFIG = {
       to { opacity: 1; transform: translateY(-50%) scale(1) rotate(0); }
     }
 
+    @keyframes rsvpSuccessOut {
+      from { opacity: 1; transform: translateY(0) scale(1); }
+      to { opacity: 0; transform: translateY(10px) scale(.985); }
+    }
+
+    @keyframes rsvpCheckOut {
+      from { opacity: 1; transform: translateY(-50%) scale(1); }
+      to { opacity: 0; transform: translateY(-50%) scale(.7); }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       #formMessage.rsvp-success-animated,
-      #formMessage.rsvp-success-animated::before {
+      #formMessage.rsvp-success-animated::before,
+      #formMessage.rsvp-success-animated.rsvp-success-leaving,
+      #formMessage.rsvp-success-animated.rsvp-success-leaving::before {
         animation: none;
       }
     }
@@ -317,16 +334,37 @@ window.WEDDING_CONFIG = {
     if (guestHero) guestHero.hidden = true;
     if (!formMessage) return;
 
+    let hideTimer = 0;
+    let clearTimer = 0;
+
+    const clearSuccessTimers = () => {
+      window.clearTimeout(hideTimer);
+      window.clearTimeout(clearTimer);
+    };
+
     const animateIfSuccess = () => {
       const text = String(formMessage.textContent || "").trim();
       const isSuccess = /¡?gracias|respuesta fue enviada|respuesta fue guardada|confirmaci[oó]n.*guard/i.test(text);
+
       if (!isSuccess) {
-        formMessage.classList.remove("rsvp-success-animated");
+        clearSuccessTimers();
+        formMessage.classList.remove("rsvp-success-animated", "rsvp-success-leaving");
         return;
       }
-      formMessage.classList.remove("rsvp-success-animated");
+
+      clearSuccessTimers();
+      formMessage.classList.remove("rsvp-success-animated", "rsvp-success-leaving");
       void formMessage.offsetWidth;
       formMessage.classList.add("rsvp-success-animated");
+
+      hideTimer = window.setTimeout(() => {
+        formMessage.classList.add("rsvp-success-leaving");
+
+        clearTimer = window.setTimeout(() => {
+          formMessage.classList.remove("rsvp-success-animated", "rsvp-success-leaving");
+          formMessage.textContent = "";
+        }, 560);
+      }, 4000);
     };
 
     const observer = new MutationObserver(animateIfSuccess);
