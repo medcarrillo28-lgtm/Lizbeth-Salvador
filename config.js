@@ -335,6 +335,8 @@ window.WEDDING_CONFIG = {
   function initRsvpPolish() {
     const guestHero = document.getElementById("guestHero");
     const formMessage = document.getElementById("formMessage");
+    const form = document.getElementById("rsvpForm");
+    const guestCard = document.getElementById("guestCard");
     if (guestHero) guestHero.hidden = true;
     if (!formMessage) return;
 
@@ -346,6 +348,37 @@ window.WEDDING_CONFIG = {
       window.clearTimeout(clearTimer);
     };
 
+    const updateCurrentResponse = () => {
+      if (!form || !guestCard) return;
+
+      const selected = form.querySelector('input[name="asiste"]:checked');
+      if (!selected) return;
+
+      const attending = selected.value === "SI";
+      const attendees = attending ? Number(document.getElementById("asistentes")?.value || 0) : 0;
+      const status = attending ? "CONFIRMADO" : "NO ASISTE";
+
+      let statusLine = guestCard.querySelector(".small");
+      if (!statusLine) {
+        statusLine = document.createElement("p");
+        statusLine.className = "small";
+        guestCard.appendChild(statusLine);
+      }
+
+      statusLine.textContent = attending
+        ? `Respuesta actual: ${status} · ${attendees} asistente(s)`
+        : `Respuesta actual: ${status}`;
+
+      if (window.WEDDING_INVITATION_DATA) {
+        window.WEDDING_INVITATION_DATA.status = status;
+        window.WEDDING_INVITATION_DATA.attendees = attendees;
+        if (window.WEDDING_INVITATION_DATA.guest) {
+          window.WEDDING_INVITATION_DATA.guest.status = attending ? "CONFIRMADO" : "NO_ASISTE";
+          window.WEDDING_INVITATION_DATA.guest.attendees = attendees;
+        }
+      }
+    };
+
     const animateIfSuccess = () => {
       const text = String(formMessage.textContent || "").trim();
       const isSuccess = /¡?gracias|respuesta fue enviada|respuesta fue guardada|confirmaci[oó]n.*guard/i.test(text);
@@ -355,6 +388,8 @@ window.WEDDING_CONFIG = {
         formMessage.classList.remove("rsvp-success-animated", "rsvp-success-leaving");
         return;
       }
+
+      updateCurrentResponse();
 
       clearSuccessTimers();
       formMessage.classList.remove("rsvp-success-animated", "rsvp-success-leaving");
