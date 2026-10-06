@@ -251,3 +251,92 @@ window.WEDDING_CONFIG = {
     startRestore();
   }
 })();
+
+// Ajustes visuales del RSVP: el nombre de la familia sólo aparece en el formulario
+// y el mensaje de éxito recibe una animación elegante al guardar la respuesta.
+(() => {
+  const style = document.createElement("style");
+  style.textContent = `
+    #guestHero {
+      display: none !important;
+    }
+
+    #formMessage.rsvp-success-animated {
+      display: block;
+      margin-top: 18px;
+      padding: 16px 18px 16px 54px;
+      position: relative;
+      border: 1px solid rgba(111, 118, 95, .28);
+      border-radius: 14px;
+      background: rgba(255, 253, 248, .95);
+      color: #4f5743;
+      box-shadow: 0 12px 34px rgba(52, 54, 47, .10);
+      animation: rsvpSuccessIn .65s cubic-bezier(.2,.8,.2,1) both;
+    }
+
+    #formMessage.rsvp-success-animated::before {
+      content: "✓";
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      width: 27px;
+      height: 27px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      transform: translateY(-50%);
+      background: #6f765f;
+      color: #fffdf8;
+      font-weight: 700;
+      line-height: 1;
+      animation: rsvpCheckIn .55s .12s cubic-bezier(.2,.9,.3,1.35) both;
+    }
+
+    @keyframes rsvpSuccessIn {
+      from { opacity: 0; transform: translateY(12px) scale(.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes rsvpCheckIn {
+      from { opacity: 0; transform: translateY(-50%) scale(.35) rotate(-18deg); }
+      to { opacity: 1; transform: translateY(-50%) scale(1) rotate(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #formMessage.rsvp-success-animated,
+      #formMessage.rsvp-success-animated::before {
+        animation: none;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+
+  function initRsvpPolish() {
+    const guestHero = document.getElementById("guestHero");
+    const formMessage = document.getElementById("formMessage");
+    if (guestHero) guestHero.hidden = true;
+    if (!formMessage) return;
+
+    const animateIfSuccess = () => {
+      const text = String(formMessage.textContent || "").trim();
+      const isSuccess = /¡?gracias|respuesta fue enviada|respuesta fue guardada|confirmaci[oó]n.*guard/i.test(text);
+      if (!isSuccess) {
+        formMessage.classList.remove("rsvp-success-animated");
+        return;
+      }
+      formMessage.classList.remove("rsvp-success-animated");
+      void formMessage.offsetWidth;
+      formMessage.classList.add("rsvp-success-animated");
+    };
+
+    const observer = new MutationObserver(animateIfSuccess);
+    observer.observe(formMessage, { childList: true, characterData: true, subtree: true });
+    animateIfSuccess();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initRsvpPolish, { once: true });
+  } else {
+    initRsvpPolish();
+  }
+})();
