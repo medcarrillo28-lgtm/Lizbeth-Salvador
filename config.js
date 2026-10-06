@@ -258,6 +258,10 @@ window.WEDDING_CONFIG = {
       display: none !important;
     }
 
+    .guest-card .small {
+      color: inherit !important;
+    }
+
     #formMessage.rsvp-success-animated {
       display: block;
       margin-top: 18px;
